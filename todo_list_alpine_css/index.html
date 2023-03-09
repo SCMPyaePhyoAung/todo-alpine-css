@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>To Do List</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="container" x-data="data">
+    <div class="card">
+      <h1 class="main-ttl">Todo</h1>
+      <div class="form-blk">
+        <form @submit.stop.prevent="addTask({ id: todos.length+1, task: name, completed: false}); name = '';">
+          <input type="text" name="todo" id="todo" class="text-box todo" placeholder="Add new..." x-model="name" />
+          <button class="btn btn-submit" type="submit">+</button>
+        </form>
+      </div>
+      <div class="filter-blk">
+        <span class="btn btn-link active" @click="getAll">All</span>
+        <span class="btn btn-link" @click="getActive">Active</span>
+        <span class="btn btn-link" @click="getCompleted">Complete</span>
+      </div>
+      <ul class="resultList">
+        <template x-for="todo in todos">
+          <li class="list flex my-3">
+            <p class="list-blk">
+            <div class="task_group" x-data+="updateData()">
+              <input type="checkbox" class="checkbox" x-model="todo.completed"
+                @click="changeStatus(event.target,todo.id)" x-show="!isEditing">
+              <label class="task_name" x-text="todo.task" x-bind:class="{'completed': todo.completed}" @click.prevent
+                @dblclick="updateTask" x-show="!isEditing"></label>
+              <div class="">
+                <input type="text" x-model="todo.task" x-show="isEditing" @click.away="updateTask"
+                @keydown.enter="disableEditing(event.target,todo.id,todo.task)" @keydown.window.escape="disableEditing(event.target,todo.id,todo.task)"
+                class="editTextBox">
+              </div>
+            </div>
+            <b class="delete" 
+              @click="todos = todos.filter(t => t.id !== todo.id), localStorage.setItem('todos', JSON.stringify(todos)), totals = todos.filter((todo) => todo.completed != true).length;">x</b>
+            </p>
+          </li>
+        </template>
+      </ul>
+      <h5 class="total"><span x-text="totals"></span> items
+        left</h5>
+      <div class="btn-group">
+        <button class="btn btn-action" id="btn_check" @click="checkAll">Check All</button>
+        <button class="btn btn-action" @click="delteCompleted">
+          Clear Completed
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="script.js"></script>
+</body>
+
+</html>
